@@ -1,25 +1,21 @@
 """Factory Method simple para instanciar el proveedor según MODEL_PROVIDER.
 
-Único patrón de diseño aprobado en este proyecto (ver CLAUDE.md, sección 1.1).
 `main.py` llama a `get_provider()` una sola vez y no necesita saber nada más
 sobre cómo se construye cada proveedor.
 """
 
 from src.providers.base_provider import BaseProvider
+from src.providers.demo_provider import DemoProvider
 from src.providers.gemini_provider import GeminiProvider
 from src.providers.groq_provider import GroqProvider
 
-# --- Nombres válidos de MODEL_PROVIDER ---
 PROVIDER_GROQ = "groq"
 PROVIDER_GEMINI = "gemini"
+PROVIDER_DEMO = "demo"
 
 
 def get_provider(name: str) -> BaseProvider:
-    """Devuelve la instancia de proveedor correspondiente a `name`.
-
-    `name` debe ser "groq" o "gemini" (valor de la variable de entorno
-    MODEL_PROVIDER). Lanza ValueError si el nombre no es reconocido.
-    """
+    """Devuelve la instancia de proveedor correspondiente a `name`."""
     nombre_normalizado = name.strip().lower()
 
     if nombre_normalizado == PROVIDER_GROQ:
@@ -28,7 +24,10 @@ def get_provider(name: str) -> BaseProvider:
     if nombre_normalizado == PROVIDER_GEMINI:
         return GeminiProvider()
 
+    if nombre_normalizado == PROVIDER_DEMO:
+        return DemoProvider()
+
     raise ValueError(
-        f"Proveedor '{name}' no soportado. Usá '{PROVIDER_GROQ}' o '{PROVIDER_GEMINI}' "
-        "en la variable de entorno MODEL_PROVIDER."
+        f"Proveedor '{name}' no soportado. Usá '{PROVIDER_GROQ}', '{PROVIDER_GEMINI}' "
+        f"o '{PROVIDER_DEMO}' (demo offline) en la variable de entorno MODEL_PROVIDER."
     )

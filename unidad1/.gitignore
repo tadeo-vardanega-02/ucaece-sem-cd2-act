@@ -17,8 +17,3 @@ env/
 # Editores / SO
 .vscode/
 .DS_Store
-
-# Empaquetado
-*.egg-info/
-build/
-dist/

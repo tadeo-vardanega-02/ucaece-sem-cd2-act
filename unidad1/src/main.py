@@ -1,13 +1,8 @@
 """Punto de entrada del proyecto.
 
-Orquesta el flujo completo: lee MODEL_PROVIDER del entorno, instancia el
-proveedor correspondiente (vía el factory), ejecuta un set de consultas de
-ejemplo aplicando la técnica de prompting elegida y vuelca prompt + respuesta
-de cada una a evidencias.md.
-
-Este archivo NO implementa detalles de ninguna API: eso vive en
-src/providers/. Tampoco arma prompts a mano: eso vive en
-src/prompt_templates.py.
+Caso: Asistente PyME e-commerce. Lee MODEL_PROVIDER del entorno,
+instancia el proveedor (groq / gemini / demo), ejecuta 3 consultas
+representativas con few-shot + CoT ligero y vuelca todo a evidencias.md.
 """
 
 import os
@@ -17,19 +12,16 @@ from dotenv import load_dotenv
 from src.prompt_templates import construir_prompt_few_shot
 from src.providers.factory import get_provider
 
-# --- Constantes del script (nada de "magic strings/numbers" inline) ---
+# Constantes del script
 MODEL_PROVIDER_ENV_VAR = "MODEL_PROVIDER"
 EVIDENCIAS_FILE_PATH = "evidencias.md"
 
-# Técnica de prompting a usar. Cambiar por construir_prompt_chain_of_thought
-# si tu justificación de la consigna 3 fue chain-of-thought.
 CONSTRUIR_PROMPT = construir_prompt_few_shot
 
-# Reemplazar por al menos 3 consultas relacionadas con tu propio caso de uso (consigna 1).
 CONSULTAS_DE_EJEMPLO = [
-    "¿Cómo cancelo una suscripción activa?",
-    "¿Qué medios de pago aceptan?",
-    "¿Puedo cambiar mi plan en cualquier momento?",
+    "¿Dónde está mi pedido #4521? Lo compré hace 5 días y todavía no me llegó.",
+    "¿Cuánto cuesta el envío a Córdoba capital y cuánto tarda?",
+    "Compré una cafetera hace 10 días y vino fallada, ¿puedo devolverla?",
 ]
 
 
@@ -39,7 +31,7 @@ def leer_proveedor_configurado() -> str:
     if not proveedor:
         raise ValueError(
             f"Falta la variable de entorno {MODEL_PROVIDER_ENV_VAR}. "
-            "Definila en tu archivo .env como 'groq' o 'gemini'."
+            "Definila en tu archivo .env como 'groq', 'gemini' o 'demo'."
         )
     return proveedor
 
@@ -52,8 +44,10 @@ def ejecutar_consulta(provider, consulta: str) -> tuple[str, str]:
 
 
 def escribir_evidencias(resultados: list[tuple[str, str, str]]) -> None:
-    """Vuelca consulta, prompt y respuesta de cada ejecución a un archivo Markdown."""
+    """Vuelca consulta, prompt y respuesta de cada ejecución a Markdown."""
     lineas = ["# Evidencias de ejecución\n"]
+    lineas.append("_Caso: Asistente atención al cliente PyME e-commerce._\n")
+    lineas.append(f"_Proveedor: {os.environ.get(MODEL_PROVIDER_ENV_VAR, '?')}_\n")
     for numero, (consulta, prompt, respuesta) in enumerate(resultados, start=1):
         lineas.append(f"## Consulta {numero}\n")
         lineas.append(f"**Consulta original:** {consulta}\n")

@@ -6,12 +6,7 @@ from groq import Groq
 
 from src.providers.base_provider import BaseProvider
 
-# --- Constantes del proveedor (nada de "magic strings/numbers" inline) ---
 GROQ_API_KEY_ENV_VAR = "GROQ_API_KEY"
-# Modelo de pesos abiertos servido por Groq (GPT-OSS de OpenAI). El catálogo de modelos
-# de Groq cambia con el tiempo (algunos se dan de baja): si este deja de existir, correr
-# `curl -s -H "Authorization: Bearer $GROQ_API_KEY" https://api.groq.com/openai/v1/models`
-# para ver los modelos vigentes en tu cuenta y actualizar esta constante.
 GROQ_MODEL_NAME = "openai/gpt-oss-20b"
 GROQ_TEMPERATURE = 0.7
 
@@ -36,8 +31,6 @@ class GroqProvider(BaseProvider):
                 messages=[{"role": "user", "content": prompt}],
             )
         except Exception as error:
-            raise RuntimeError(
-                f"Error al consultar la API de Groq: {error}"
-            ) from error
+            raise RuntimeError(f"Error al consultar la API de Groq: {error}") from error
 
         return respuesta.choices[0].message.content

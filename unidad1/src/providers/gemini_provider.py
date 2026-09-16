@@ -6,7 +6,6 @@ import google.generativeai as genai
 
 from src.providers.base_provider import BaseProvider
 
-# --- Constantes del proveedor (nada de "magic strings/numbers" inline) ---
 GEMINI_API_KEY_ENV_VAR = "GEMINI_API_KEY"
 GEMINI_MODEL_NAME = "gemini-1.5-flash"
 GEMINI_TEMPERATURE = 0.7
